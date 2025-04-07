@@ -13,6 +13,7 @@ public class ChestController : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
+        
     }
 
     void Update()

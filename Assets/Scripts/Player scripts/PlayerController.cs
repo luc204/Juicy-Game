@@ -12,9 +12,12 @@ public class Player1Movement : MonoBehaviour
     
     public bool isGrounded;
     public bool IsWalking ;
-    public bool isAttacking ;
-  
-    private Rigidbody2D rb;
+    public bool isAttacking;
+    private bool facingRight =true;
+
+    public GameObject sword;
+
+    private Rigidbody2D rb;
     private Animator animator;
 
     public AudioSource audioSource;
@@ -28,6 +31,7 @@ public class Player1Movement : MonoBehaviour
 
     void Start()
     {
+        sword.SetActive(true);
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         gameObject.tag = "Player";
@@ -54,12 +58,14 @@ public class Player1Movement : MonoBehaviour
             transform.position += Vector3.left * Speed * Time.deltaTime;
             animator.SetBool("IsWalking", true);
             IsWalking = true;
+            if (facingRight) Flip();
         }
         if (Input.GetKey(KeyCode.D))
         {
             transform.position += Vector3.right * Speed * Time.deltaTime;
             animator.SetBool("IsWalking", true);
             IsWalking = true;
+            if (!facingRight) Flip();
         }
         if (Input.GetKeyDown(KeyCode.W) && isGrounded)
         {
@@ -71,13 +77,28 @@ public class Player1Movement : MonoBehaviour
         {
             animator.SetTrigger("Attack");
             PlayAttackSound();
+            attack();
         }
+
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            ReappearSword();
+        }
+
+
         if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
         {
             animator.SetBool("IsWalking", false);
             IsWalking = false;
         }
 
+    }
+    void Flip()
+    {
+        facingRight = !facingRight;
+        Vector3 scaler = transform.localScale;
+        scaler.x *= -1;
+        transform.localScale = scaler;
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -100,6 +121,18 @@ public class Player1Movement : MonoBehaviour
             isGrounded = false;
         }
     }
+
+    public void attack()
+    {  
+        sword.SetActive(false);
+        animator.SetTrigger("Attack");
+    }
+    public void ReappearSword()
+    {
+        sword.SetActive(true);
+        isAttacking = false;
+    }
+
     void PlayWalkSound()
     {
         if (audioSource != null && WalkSound != null)
